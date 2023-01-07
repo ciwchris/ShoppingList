@@ -1,0 +1,118 @@
+﻿@page "/List/{id:guid}"
+@using ShoppingListApp.Shared 
+@implements IDisposable
+
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject ShoppingListStateContainer ShoppingListStateContainer
+
+<PageTitle>Shopping List @shoppingList.Name</PageTitle>
+
+<div class="w-full flex items-center justify-center font-sans">
+    <div class="sticky top-0 text-slate-500">
+    </div>
+    <div class="rounded shadow p-6 m-4 w-full lg:w-3/4 lg:max-w-lg">
+        <div class="mb-4">
+            <svg
+                onclick="@(() => OnNavigateToList(@shoppingList))"
+                aria-hidden="true"
+                focusable="false"
+                data-icon="arrow-alt-left"
+                fill="currentColor"
+                viewBox="0 0 32 32"
+                role="img"
+                class="inline align-bottom w-7 h-7"
+                xmlns="http://www.w3.org/2000/svg">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_iconCarrier">
+                    <title>chevron-left</title>
+                    <path d="M12.768 16l9.117-9.116c0.226-0.226 0.366-0.539 0.366-0.884 0-0.691-0.56-1.251-1.251-1.251-0.346 0-0.658 0.14-0.885 0.367v0l-9.999 10c-0.226 0.226-0.366 0.539-0.366 0.884s0.14 0.658 0.366 0.884l9.999 10.001c0.226 0.226 0.539 0.366 0.884 0.366 0.691 0 1.251-0.56 1.251-1.251 0-0.345-0.14-0.658-0.366-0.884l0 0z"></path>
+                </g>
+            </svg>
+            <h1 class="inline text-2xl text-slate-500">@shoppingList.Name</h1>
+        </div>
+
+        <div class="mb-4">
+            <form class="flex mt-4" @onsubmit="@(() => OnItemAdd())">
+                <input
+                    @bind-value="@itemName"
+                    placeholder="Add Item"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 mr-4 text-grey-darker">
+                <button
+                    @onclick="@(() => OnItemAdd())"
+                    class="flex-no-shrink p-2 border-2 rounded text-teal-400 border-teal-400 hover:text-white hover:bg-teal-400">Add</button>
+            </form>
+        </div>
+        @foreach (var item in shoppingList.ShoppingListItems)
+        {
+        <div class="flex mb-4 items-center">
+            <p class="w-full text-slate-500">@item.Name</p>
+            <button
+                @onclick="@(() => OnItemDelete(item.Id))"
+                class="flex-no-shrink p-2 ml-2 border-2 rounded text-red-400 border-red-400 hover:text-white hover:bg-red-400">Remove</button>
+        </div>
+        }
+    </div>
+</div>
+
+@code {
+    private ShoppingList shoppingList = new();
+    private string itemName = string.Empty;
+    [Parameter]
+    public Guid Id { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        ShoppingListStateContainer.OnStateChange += StateHasChanged;
+        shoppingList = ShoppingListStateContainer.Value;
+    }
+
+    public void Dispose()
+    {
+        ShoppingListStateContainer.OnStateChange -= StateHasChanged;
+    }
+
+    protected async Task OnItemAdd()
+    {
+        if (string.IsNullOrWhiteSpace(itemName)) return;
+
+        try
+        {
+            var itemToAdd = new ShoppingListItem
+                {
+                    Id = Guid.NewGuid(),
+                    Name = itemName
+                };
+            itemName = string.Empty;
+            shoppingList.ShoppingListItems.Add(itemToAdd);
+
+            var result = await Http.PostAsync($"api/AddItem/{shoppingList.Id}", JsonContent.Create(itemToAdd));
+            shoppingList.ShoppingListItems = await result.Content.ReadFromJsonAsync<List<ShoppingListItem>>() ?? new();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+    }
+
+    protected async Task OnItemDelete(Guid itemId)
+    {
+        try
+        {
+            shoppingList.ShoppingListItems.Remove(shoppingList.ShoppingListItems.Single(item => item.Id == itemId));
+            var result = await Http.DeleteAsync($"api/RemoveItem/{shoppingList.Id}/{itemId}");
+            shoppingList.ShoppingListItems = await result.Content.ReadFromJsonAsync<List<ShoppingListItem>>() ?? new();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+    }
+
+    private void OnNavigateToList(ShoppingList shoppingList)
+    {
+        ShoppingListStateContainer.SetValue(shoppingList);
+        NavigationManager.NavigateTo("/");
+    }
+}

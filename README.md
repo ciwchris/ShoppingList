@@ -1,5 +1,15 @@
 # Blazor Starter Application
 
+Tailwind with Blazor
+
+- https://chrissainty.com/adding-tailwind-css-v3-to-a-blazor-app/ (used this one)
+- https://brianlagunas.com/using-npm-packages-in-blazor/ (did not use this one)
+- https://tailwindcomponents.com/component/todo-list-app/landing
+
+Blazor
+
+- https://www.coderschmoder.com/five-ways-to-pass-data-from-one-blazor-component-to-another/
+
 This template contains an example .NET 7 [Blazor WebAssembly](https://docs.microsoft.com/aspnet/core/blazor/?view=aspnetcore-6.0#blazor-webassembly) client application, a .NET 7 C# [Azure Functions](https://docs.microsoft.com/azure/azure-functions/functions-overview), and a C# class library with shared code.
 
 > Note: Azure Functions only supports .NET 7 in the isolated process execution model

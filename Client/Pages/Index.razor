@@ -1,9 +1,114 @@
 ﻿@page "/"
+@using ShoppingListApp.Shared 
+@implements IDisposable
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject ShoppingListStateContainer ShoppingListStateContainer
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Lopes Shopping Lists</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="w-full flex items-center justify-center font-sans">
+    <div class="rounded shadow p-6 m-4 w-full lg:w-3/4 lg:max-w-lg">
+        <div class="mb-4">
+            <h1 class="text-2xl text-slate-500">Shopping Lists</h1>
+        </div>
 
-Welcome to your new app.
+        @if (loading)
+        {
+            <div class="flex mb-4 items-center">
+                <p class="w-full text-slate-600">Loading…</p>
+            </div>
+        }
+        else
+        {
+            <div class="mb-4">
+                <form class="flex mt-4" @onsubmit="@(() => OnShoppingListAdd())">
+                    <input
+                        @bind-value="@shoppingListName"
+                        placeholder="Add Shopping List"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 mr-4 text-grey-darker">
+                    <button
+                        @onclick="@(() => OnShoppingListAdd())"
+                        class="flex-no-shrink p-2 border-2 rounded text-teal-400 border-teal-400 hover:text-white hover:bg-teal-400">Add</button>
+                </form>
+            </div>
+            @foreach (var shoppingList in shoppingLists)
+            {
+            <div class="flex mb-4 items-center">
+                <p class="w-full text-slate-500" @onclick="@(() => OnNavigateToList(@shoppingList))">@shoppingList.Name</p>
+                <button
+                    @onclick="@(() => OnShoppingListDelete(@shoppingList.Id))"
+                    class="flex-no-shrink p-2 ml-2 border-2 rounded text-red-400 border-red-400 hover:text-white hover:bg-red-400">Remove</button>
+            </div>
+            }
+        }
+    </div>
+</div>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code {
+    private List<ShoppingList> shoppingLists = new();
+    private bool loading = true;
+    private string shoppingListName = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ShoppingListStateContainer.OnStateChange += StateHasChanged;
+        try
+        {
+            shoppingLists = await Http.GetFromJsonAsync<List<ShoppingList>>("/api/ShoppingLists") ?? new();
+            loading = false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+    }
+
+    public void Dispose()
+    {
+        ShoppingListStateContainer.OnStateChange -= StateHasChanged;
+    }
+
+    protected async Task OnShoppingListAdd()
+    {
+        if (string.IsNullOrWhiteSpace(shoppingListName)) return;
+
+        try
+        {
+            var shoppingList = new ShoppingList
+            {
+                Id = Guid.NewGuid(),
+                Name = shoppingListName,
+                ShoppingListItems = new()
+            };
+            shoppingListName = string.Empty;
+            shoppingLists.Add(shoppingList);
+            var result = await Http.PostAsync($"api/AddShoppingList", JsonContent.Create(shoppingList));
+            shoppingLists = await result.Content.ReadFromJsonAsync<List<ShoppingList>>() ?? new();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+    }
+
+    protected async Task OnShoppingListDelete(Guid id)
+    {
+        try
+        {
+            shoppingLists.Remove(shoppingLists.Single(list => list.Id == id));
+            var result = await Http.DeleteAsync($"api/RemoveShoppingList/{id}");
+            shoppingLists = await result.Content.ReadFromJsonAsync<List<ShoppingList>>() ?? new();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+    }
+
+    private void OnNavigateToList(ShoppingList shoppingList)
+    {
+        ShoppingListStateContainer.SetValue(shoppingList);
+        NavigationManager.NavigateTo($"list/{shoppingList.Id}");
+    }
+}

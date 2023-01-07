@@ -1,4 +1,6 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
+﻿@inject NavigationManager NavigationManager
+
+<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
@@ -6,7 +8,17 @@
     <NotFound>
         <PageTitle>Not found</PageTitle>
         <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
+        <div class="w-full flex items-center justify-center font-sans">
+            <div class="p-6 m-4 w-full lg:w-3/4 lg:max-w-lg">
+                <div class="mb-4">
+                    <h1 class="text-2xl text-slate-500">This page does not exist</h1>
+                    <p class="w-full text-slate-500">Sorry about that! Please visit the home page to get where you need to go.</p>
+                    <button
+                        @onclick="@(() => NavigationManager.NavigateTo("/"))"
+                        class="flex-no-shrink p-2 border-2 rounded text-teal-400 border-teal-400 hover:text-white hover:bg-teal-400">Take me there</button>
+                </div>
+            </div>
+        </div>
         </LayoutView>
     </NotFound>
 </Router>

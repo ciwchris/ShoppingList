@@ -1,10 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>BlazorApp.Client</RootNamespace>
+    <RootNamespace>ShoppingListApp.Client</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
