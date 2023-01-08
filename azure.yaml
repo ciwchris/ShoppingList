@@ -1,9 +1,13 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
 
 name: shopping-list
-infra:
-    provider: ""
-    path: ""
-    module: ""
-pipeline:
-    provider: ""
+services:
+  web:
+    project: ./Client
+    dist: bin/Release/net7.0/wwwroot
+    language: dotnet
+    host: staticwebapp
+  api:
+    project: ./Api
+    language: dotnet
+    host: function

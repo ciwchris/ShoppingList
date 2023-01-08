@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>ShoppingListApp.Client</RootNamespace>
+    <UserSecretsId>3ff8bb0e-675c-4f0f-83a1-152837ea9836</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
