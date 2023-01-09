@@ -7,26 +7,24 @@ using Microsoft.Extensions.Logging;
 
 namespace ShoppingListApp;
 
-public class ShoppingLists
+public class SaveShoppingLists
 {
     private readonly ILogger logger;
     private readonly ShoppingListsService shoppingListsService;
 
-    public ShoppingLists(ILoggerFactory loggerFactory, ShoppingListsService shoppingListsService)
+    public SaveShoppingLists(ILoggerFactory loggerFactory, ShoppingListsService shoppingListsService)
     {
-        logger = loggerFactory.CreateLogger<ShoppingLists>();
+        logger = loggerFactory.CreateLogger<SaveShoppingLists>();
         this.shoppingListsService = shoppingListsService;
     }
 
-    [Function(nameof(ShoppingLists))]
+    [Function(nameof(SaveShoppingLists))]
     public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
     {
-        logger.LogInformation("Retrieving lists");
+        logger.LogInformation("Saving lists");
 
-        var result = await shoppingListsService.GetShoppingLists();
+        await shoppingListsService.SaveShoppingLists();
 
-        var response = req.CreateResponse(HttpStatusCode.OK);
-        _ = response.WriteAsJsonAsync(result);
-        return response;
+        return req.CreateResponse(HttpStatusCode.OK);
     }
 }

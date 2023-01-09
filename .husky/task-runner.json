@@ -4,13 +4,14 @@
             "name": "tailwindcss",
             "command": "dotnet",
             "group": "pre-commit",
-            "args": ["tailwindcss", "-i", "./Client/Styles/app.css", "-o", "./Client/wwwroot/css/app.css", "-c", "./Client/tailwind.config.js", "--minify"]
+            "args": ["tailwindcss", "-i", "./Client/Styles/app.css", "-o", "./Client/wwwroot/css/app.css", "-c", "./Client/tailwind.config.js", "--minify"],
+            "include": ["./Client/Styles/app.css"]
         },
         {
             "name": "format",
             "command": "dotnet",
             "group": "pre-commit",
-            "args": ["format", "src", "--include", "${staged}"],
+            "args": ["format", "./", "--include", "${staged}"],
             "include": ["**/*.cs"]
         }
     ]

@@ -2,6 +2,7 @@
 using ShoppingListApp.Shared;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Api.Services
 {
@@ -12,7 +13,12 @@ namespace Api.Services
         public ShoppingListsService(ShoppingListsRepository shoppingListsRepository) =>
             this.shoppingListsRepository = shoppingListsRepository;
 
-        public List<ShoppingList> GetShoppingLists() => shoppingListsRepository.Get();
+        public async Task<List<ShoppingList>> GetShoppingLists()
+        {
+            var shoppingLists = shoppingListsRepository.Get();
+            if (shoppingLists.Count == 0) shoppingLists = await shoppingListsRepository.RetrieveFromStorage();
+            return shoppingLists;
+        }
 
         public List<ShoppingList> RemoveShoppingList(Guid listId) =>
             shoppingListsRepository.Remove(listId);
@@ -25,5 +31,8 @@ namespace Api.Services
 
         public List<ShoppingListItem> RemoveItem(Guid listId, Guid itemId) =>
             shoppingListsRepository.RemoveItem(listId, itemId);
+
+        internal async Task<List<ShoppingList>> SaveShoppingLists() =>
+            await shoppingListsRepository.SaveToStorage();
     }
 }

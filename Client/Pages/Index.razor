@@ -43,6 +43,26 @@
             }
         }
     </div>
+    <div class="relative h-32 w-32 ...">
+        <div class="absolute bottom-0 right-0 h-16 w-16">
+            <svg
+                @onclick="@(() => OnSaveShoppingListAsync())"
+                aria-hidden="true"
+                focusable="false"
+                data-icon="arrow-alt-left"
+                fill="currentColor"
+                viewBox="0 0 32 32"
+                role="img"
+                class="inline align-bottom w-7 h-7"
+                xmlns="http://www.w3.org/2000/svg">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_iconCarrier">
+                    <title>chevron-left</title>
+                    <path d="M12.768 16l9.117-9.116c0.226-0.226 0.366-0.539 0.366-0.884 0-0.691-0.56-1.251-1.251-1.251-0.346 0-0.658 0.14-0.885 0.367v0l-9.999 10c-0.226 0.226-0.366 0.539-0.366 0.884s0.14 0.658 0.366 0.884l9.999 10.001c0.226 0.226 0.539 0.366 0.884 0.366 0.691 0 1.251-0.56 1.251-1.251 0-0.345-0.14-0.658-0.366-0.884l0 0z"></path>
+                </g>
+            </svg>
+        </div>
+    </div>
 </div>
 
 @code {
@@ -99,6 +119,18 @@
             shoppingLists.Remove(shoppingLists.Single(list => list.Id == id));
             var result = await Http.DeleteAsync($"api/RemoveShoppingList/{id}");
             shoppingLists = await result.Content.ReadFromJsonAsync<List<ShoppingList>>() ?? new();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+    }
+
+    private async Task OnSaveShoppingListAsync()
+    {
+        try
+        {
+            await Http.GetFromJsonAsync<List<ShoppingList>>("/api/SaveShoppingLists");
         }
         catch (Exception ex)
         {

@@ -1,21 +1,23 @@
-﻿using ShoppingListApp.Shared;
+﻿using Azure.Storage.Blobs;
+using Microsoft.Extensions.Configuration;
+using ShoppingListApp.Shared;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Api.Repositories;
 
 public class ShoppingListsRepository
 {
-    private readonly List<ShoppingList> shoppingLists;
+    private readonly string connectionString;
+    private List<ShoppingList> shoppingLists = new();
 
-    public ShoppingListsRepository()
+    public ShoppingListsRepository(IConfiguration configuration)
     {
-        shoppingLists = new()
-        {
-            { new ShoppingList { Id = Guid.NewGuid(), Name = "Grocery" } },
-            { new ShoppingList { Id = Guid.NewGuid(), Name = "Wholesale" } }
-        };
+        connectionString = configuration.GetValue<string>("BlobConnectionString");
     }
 
     public List<ShoppingList> Get() => shoppingLists;
@@ -27,25 +29,54 @@ public class ShoppingListsRepository
         return shoppingLists;
     }
 
-    internal List<ShoppingList> Add(ShoppingList shoppingList)
+    public List<ShoppingList> Add(ShoppingList shoppingList)
     {
         shoppingLists.Add(shoppingList);
         return shoppingLists;
     }
 
-    internal List<ShoppingListItem> AddItem(Guid listId, ShoppingListItem itemToAdd)
+    public List<ShoppingListItem> AddItem(Guid listId, ShoppingListItem itemToAdd)
     {
         var listToAddItemTo = shoppingLists.Single(list => list.Id == listId);
         listToAddItemTo.ShoppingListItems.Add(itemToAdd);
         return listToAddItemTo.ShoppingListItems;
     }
 
-    internal List<ShoppingListItem> RemoveItem(Guid listId, Guid itemId)
+    public List<ShoppingListItem> RemoveItem(Guid listId, Guid itemId)
     {
         var listToRemoveItemFrom = shoppingLists.Single(list => list.Id == listId);
         var itemToRemove = listToRemoveItemFrom.ShoppingListItems
             .Single(item => item.Id == itemId);
         listToRemoveItemFrom.ShoppingListItems.Remove(itemToRemove);
         return listToRemoveItemFrom.ShoppingListItems;
+    }
+
+    public async Task<List<ShoppingList>> SaveToStorage()
+    {
+        var blobServiceClient = new BlobServiceClient(connectionString);
+        var containerClient = blobServiceClient.GetBlobContainerClient("shopping-lists");
+        await containerClient.CreateIfNotExistsAsync();
+
+        var json = System.Text.Json.JsonSerializer.Serialize(shoppingLists);
+        using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+        {
+            await containerClient.UploadBlobAsync("shopping-list", ms);
+        }
+
+        return shoppingLists;
+    }
+
+    public async Task<List<ShoppingList>> RetrieveFromStorage()
+    {
+        var blobClient = new BlobClient(connectionString, "shopping-lists", "shopping-list");
+
+        if (await blobClient.ExistsAsync())
+        {
+            var blob = await blobClient.DownloadContentAsync();
+            var json = blob.Value.Content.ToString();
+            shoppingLists = System.Text.Json.JsonSerializer.Deserialize<List<ShoppingList>>(json);
+        }
+
+        return shoppingLists;
     }
 }
