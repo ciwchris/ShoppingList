@@ -53,14 +53,12 @@ public class ShoppingListsRepository
 
     public async Task<List<ShoppingList>> SaveToStorage()
     {
-        var blobServiceClient = new BlobServiceClient(connectionString);
-        var containerClient = blobServiceClient.GetBlobContainerClient("shopping-lists");
-        await containerClient.CreateIfNotExistsAsync();
+        var blobClient = new BlobClient(connectionString, "shopping-lists", "shopping-list");
 
         var json = System.Text.Json.JsonSerializer.Serialize(shoppingLists);
         using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
         {
-            await containerClient.UploadBlobAsync("shopping-list", ms);
+            await blobClient.UploadAsync(ms, overwrite: true);
         }
 
         return shoppingLists;
