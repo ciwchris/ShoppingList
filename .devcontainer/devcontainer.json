@@ -14,7 +14,8 @@
 		"vscode": {
 			"settings": {},
 			"extensions": [
-        "muhammad-sammy.csharp",
+        "ms-dotnettools.csharp",
+        "azuretools.vscode-azurefunctions",
 				"streetsidesoftware.code-spell-checker",
         "ms-azuretools.azure-dev"
 			]
