@@ -16,6 +16,7 @@
 			"extensions": [
         "ms-dotnettools.csharp",
         "azuretools.vscode-azurefunctions",
+        "ms-azuretools.vscode-azurestaticwebapps",
 				"streetsidesoftware.code-spell-checker",
         "ms-azuretools.azure-dev"
 			]
