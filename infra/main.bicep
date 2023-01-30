@@ -34,6 +34,7 @@ module web './app/web.bicep' = {
     name: !empty(webServiceName) ? webServiceName : '${abbrs.webStaticSites}web-${resourceToken}'
     location: location
     tags: tags
+    funcAppName: api.outputs.SERVICE_API_NAME
   }
 }
 
@@ -46,7 +47,7 @@ module api './app/api.bicep' = {
     location: location
     tags: tags
     storageAccountName: storage.outputs.name
-    allowedOrigins: [ web.outputs.SERVICE_WEB_URI ]
+//    allowedOrigins: [ web.outputs.SERVICE_WEB_URI ]
     applicationInsightsName: applicationInsights.outputs.name
   }
 }

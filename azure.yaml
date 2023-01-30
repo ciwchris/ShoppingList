@@ -4,7 +4,7 @@ name: shopping-list
 services:
   web:
     project: ./Client
-    dist: bin/Release/net7.0/wwwroot
+    dist: bin/Release/net7.0/publish/wwwroot
     language: dotnet
     host: staticwebapp
   api:
