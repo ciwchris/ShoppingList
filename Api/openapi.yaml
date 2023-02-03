@@ -1,0 +1,116 @@
+openapi: 3.0.0
+info:
+  description: Shopping List API
+  version: 1.0.0
+  title: Shopping List API
+
+components:
+  schemas:
+    ShoppingListItem:
+      type: object
+      required:
+        - id
+        - name
+      description: An item in a shopping list
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        count:
+          type: number
+          default: 1
+    ShoppingList:
+      type: object
+      required:
+        - id
+        - name
+      description: A shopping list, container of shopping items
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        shoppingListItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/ShoppingListItem"
+  parameters:
+    listId:
+      in: path
+      required: true
+      name: listId
+      description: The shopping list
+      schema:
+        type: string
+
+  requestBodies:
+    ShoppingList:
+      description: Shopping list to add
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ShoppingList"
+    ShoppingListItem:
+      description: Shopping list item to add
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ShoppingListItem"
+
+  responses:
+    ShoppingListArray:
+      description: Shopping lists
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/ShoppingList"
+    ShoppingListItem:
+      description: Shopping list item added
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ShoppingListItem"
+    ShoppingList:
+      description: Shopping list added
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ShoppingList"
+
+paths:
+  /addItem/{listId}:
+    post:
+      operationId: AddItem
+      summary: Adds a new item to a shopping list
+      tags:
+        - Add
+      parameters:
+        - $ref: "#/components/parameters/listId"
+      requestBody:
+        $ref: "#/components/requestBodies/ShoppingListItem"
+      responses:
+        200:
+          $ref: "#/components/responses/ShoppingListItem"
+  /addShoppingList:
+    post:
+      operationId: AddShoppingList
+      summary: Adds a new shopping list
+      tags:
+        - Add
+      requestBody:
+        $ref: "#/components/requestBodies/ShoppingList"
+      responses:
+        200:
+          $ref: "#/components/responses/ShoppingList"
+  /shoppingLists:
+    get:
+      operationId: GetShoppingLists
+      summary: Gets all shopping lists
+      tags:
+        - Get
+      responses:
+        200:
+          $ref: "#/components/responses/ShoppingListArray"

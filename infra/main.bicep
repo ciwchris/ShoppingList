@@ -34,7 +34,6 @@ module web './app/web.bicep' = {
     name: !empty(webServiceName) ? webServiceName : '${abbrs.webStaticSites}web-${resourceToken}'
     location: location
     tags: tags
-    funcAppName: api.outputs.SERVICE_API_NAME
   }
 }
 
@@ -47,7 +46,7 @@ module api './app/api.bicep' = {
     location: location
     tags: tags
     storageAccountName: storage.outputs.name
-//    allowedOrigins: [ web.outputs.SERVICE_WEB_URI ]
+    allowedOrigins: [ web.outputs.SERVICE_WEB_URI ]
     applicationInsightsName: applicationInsights.outputs.name
   }
 }
@@ -71,6 +70,33 @@ module applicationInsights './app/applicationInsights.bicep' = {
     location: location
     tags: tags
     name: !empty(applicationInsightsName) ? applicationInsightsName : '${abbrs.insightsComponents}${resourceToken}'
+  }
+}
+
+// Creates Azure API Management (APIM) service to mediate the requests between the frontend and the backend API
+module apim './app/apim.bicep' = {
+  name: 'apim-deployment'
+  scope: rg
+  params: {
+    name: '${abbrs.apiManagementService}${resourceToken}'
+    location: location
+    tags: tags
+    applicationInsightsName: applicationInsights.outputs.name
+  }
+}
+
+// Configures the API in the Azure API Management (APIM) service
+module apimApi './app/apim-api.bicep' = {
+  name: 'apim-api-deployment'
+  scope: rg
+  params: {
+    name: apim.outputs.apimServiceName
+    apiName: 'shopping-list-api'
+    apiDisplayName: 'Shopping List API'
+    apiDescription: 'This is a Shopping List API'
+    apiPath: 'ShoppingList'
+    webFrontendUrl: web.outputs.SERVICE_WEB_URI
+    apiBackendUrl: api.outputs.SERVICE_API_URI
   }
 }
 
