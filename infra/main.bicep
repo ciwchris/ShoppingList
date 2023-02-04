@@ -14,6 +14,7 @@ param apiServiceName string = ''
 param resourceGroupName string = ''
 param storageAccountName string = ''
 param webServiceName string = ''
+param apimProductApiName string = 'shopping-list-api'
 
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
@@ -34,6 +35,18 @@ module web './app/web.bicep' = {
     name: !empty(webServiceName) ? webServiceName : '${abbrs.webStaticSites}web-${resourceToken}'
     location: location
     tags: tags
+    apimName: apim.outputs.apimServiceName
+  }
+}
+
+// Link application frontend to APIM
+module apimProductApis './app/apim-product-apis.bicep' = {
+  name: 'apimProductApis'
+  scope: rg
+  params: {
+    apimName: apim.outputs.apimServiceName
+    apimProductName: web.outputs.APIM_PRODUCT_NAME
+    apimProductApiName: apimProductApiName
   }
 }
 
@@ -46,7 +59,6 @@ module api './app/api.bicep' = {
     location: location
     tags: tags
     storageAccountName: storage.outputs.name
-    allowedOrigins: [ web.outputs.SERVICE_WEB_URI ]
     applicationInsightsName: applicationInsights.outputs.name
   }
 }
@@ -91,11 +103,10 @@ module apimApi './app/apim-api.bicep' = {
   scope: rg
   params: {
     name: apim.outputs.apimServiceName
-    apiName: 'shopping-list-api'
+    apiName: apimProductApiName
     apiDisplayName: 'Shopping List API'
     apiDescription: 'This is a Shopping List API'
-    apiPath: 'ShoppingList'
-    webFrontendUrl: web.outputs.SERVICE_WEB_URI
+    apiPath: 'api'
     apiBackendUrl: api.outputs.SERVICE_API_URI
   }
 }
@@ -105,3 +116,4 @@ output AZURE_LOCATION string = location
 output AZURE_TENANT_ID string = tenant().tenantId
 output API_BASE_URL string = api.outputs.SERVICE_API_URI
 output WEB_BASE_URL string = web.outputs.SERVICE_WEB_URI
+output PRODUCT_NAME string = web.outputs.APIM_PRODUCT_NAME

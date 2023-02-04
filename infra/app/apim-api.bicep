@@ -17,13 +17,10 @@ param apiDescription string
 @minLength(1)
 param apiPath string
 
-@description('Absolute URL of the web frontend')
-param webFrontendUrl string
-
 @description('Absolute URL of the backend service implementing this API.')
 param apiBackendUrl string
 
-var apiPolicyContent = replace(loadTextContent('./apim-api-policy.xml'), '{origin}', webFrontendUrl)
+var apiPolicyContent = loadTextContent('./apim-api-policy.xml')
 
 resource restApi 'Microsoft.ApiManagement/service/apis@2021-12-01-preview' = {
   name: apiName
@@ -36,7 +33,7 @@ resource restApi 'Microsoft.ApiManagement/service/apis@2021-12-01-preview' = {
     subscriptionRequired: false
     type: 'http'
     format: 'openapi'
-    serviceUrl: apiBackendUrl
+    serviceUrl: '${apiBackendUrl}/${apiPath}'
     value: loadTextContent('../../Api/openapi.yaml')
   }
 }

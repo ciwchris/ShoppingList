@@ -3,7 +3,6 @@ param location string = resourceGroup().location
 param tags object = {}
 
 // Reference Properties
-param allowedOrigins array = []
 param applicationInsightsName string
 param storageAccountName string
 
@@ -33,7 +32,7 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
     serverFarmId: hostingPlan.id
     siteConfig: {
       cors: {
-        allowedOrigins: union([ 'https://portal.azure.com', 'https://ms.portal.azure.com' ], allowedOrigins)
+        allowedOrigins: [ 'https://portal.azure.com', 'https://ms.portal.azure.com' ]
       }
       appSettings: [
         {
@@ -46,7 +45,7 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'WEBSITE_CONTENTSHARE'
-          value: '${functionAppName}'
+          value: functionAppName
         }
         {
           name: 'APPINSIGHTS_INSTRUMENTATIONKEY'

@@ -2,25 +2,6 @@
 <policies>
     <inbound>
         <base />
-        <!-- This policy is needed to handle preflight requests using the OPTIONS method. Learn more at https://learn.microsoft.com/en-us/azure/api-management/api-management-cross-domain-policies  -->
-        <cors allow-credentials="false">
-            <allowed-origins>
-                <origin>{origin}</origin>
-            </allowed-origins>
-            <allowed-methods>
-                <method>PUT</method>
-                <method>GET</method>
-                <method>POST</method>
-                <method>DELETE</method>
-                <method>PATCH</method>
-            </allowed-methods>
-            <allowed-headers>
-                <header>*</header>
-            </allowed-headers>
-            <expose-headers>
-                <header>*</header>
-            </expose-headers>
-        </cors>
         <!-- Optional policy to validate the request content. Learn more at https://learn.microsoft.com/en-us/azure/api-management/validation-policies#validate-content -->
         <validate-content unspecified-content-type-action="ignore" max-size="1024" size-exceeded-action="detect" errors-variable-name="requestBodyValidation">
             <content type="application/json" validate-as="json" action="detect" />
