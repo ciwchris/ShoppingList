@@ -13,10 +13,6 @@ param apiDisplayName string
 @minLength(1)
 param apiDescription string
 
-@description('Relative URL uniquely identifying this API and all of its resource paths within the API Management service instance. It is appended to the API endpoint base URL specified during the service instance creation to form a public URL for this API.')
-@minLength(1)
-param apiPath string
-
 @description('Absolute URL of the backend service implementing this API.')
 param apiBackendUrl string
 
@@ -28,12 +24,12 @@ resource restApi 'Microsoft.ApiManagement/service/apis@2021-12-01-preview' = {
   properties: {
     description: apiDescription
     displayName: apiDisplayName
-    path: apiPath
+    path: ''
     protocols: [ 'https' ]
     subscriptionRequired: false
     type: 'http'
     format: 'openapi'
-    serviceUrl: '${apiBackendUrl}/${apiPath}'
+    serviceUrl: '${apiBackendUrl}/api'
     value: loadTextContent('../../Api/openapi.yaml')
   }
 }
@@ -97,4 +93,4 @@ resource apimLogger 'Microsoft.ApiManagement/service/loggers@2021-12-01-preview'
   parent: apimService
 }
 
-output SERVICE_API_URI string = '${apimService.properties.gatewayUrl}/${apiPath}'
+output SERVICE_API_URI string = apimService.properties.gatewayUrl

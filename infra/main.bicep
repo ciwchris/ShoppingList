@@ -106,7 +106,6 @@ module apimApi './app/apim-api.bicep' = {
     apiName: apimProductApiName
     apiDisplayName: 'Shopping List API'
     apiDescription: 'This is a Shopping List API'
-    apiPath: 'api'
     apiBackendUrl: api.outputs.SERVICE_API_URI
   }
 }
