@@ -36,6 +36,13 @@ components:
           items:
             $ref: "#/components/schemas/ShoppingListItem"
   parameters:
+    itemId:
+      in: path
+      required: true
+      name: itemId
+      description: The item in the shopping list
+      schema:
+        type: string
     listId:
       in: path
       required: true
@@ -67,14 +74,22 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/ShoppingList"
+    ShoppingListItemArray:
+      description: Shopping list items
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/ShoppingListItem"
     ShoppingListItem:
-      description: Shopping list item added
+      description: Shopping list item
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ShoppingListItem"
     ShoppingList:
-      description: Shopping list added
+      description: Shopping list
       content:
         application/json:
           schema:
@@ -114,3 +129,26 @@ paths:
       responses:
         200:
           $ref: "#/components/responses/ShoppingListArray"
+  /removeShoppingList/{listId}:
+    delete:
+      operationId: RemoveShoppingList
+      summary: Removes a shopping list
+      tags:
+        - Remove
+      parameters:
+        - $ref: "#/components/parameters/listId"
+      responses:
+        200:
+          $ref: "#/components/responses/ShoppingListArray"
+  /removeItem/{listId}/{itemId}:
+    delete:
+      operationId: RemoveItem
+      summary: Removes an item from a shopping list
+      tags:
+        - Remove
+      parameters:
+        - $ref: "#/components/parameters/listId"
+        - $ref: "#/components/parameters/itemId"
+      responses:
+        200:
+          $ref: "#/components/responses/ShoppingListItemArray"
