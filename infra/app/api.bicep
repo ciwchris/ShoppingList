@@ -56,6 +56,10 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
           value: 'dotnet-isolated'
         }
         {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: '~4'
+        }
+        {
           name: 'BlobConnectionString'
           value: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storage.listKeys().keys[0].value}'
         }

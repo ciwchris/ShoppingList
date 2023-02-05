@@ -24,7 +24,7 @@ resource restApi 'Microsoft.ApiManagement/service/apis@2021-12-01-preview' = {
   properties: {
     description: apiDescription
     displayName: apiDisplayName
-    path: ''
+    path: 'api'
     protocols: [ 'https' ]
     subscriptionRequired: false
     type: 'http'
