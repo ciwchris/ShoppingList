@@ -1,5 +1,26 @@
 {
-    "navigationFallback": {
-        "rewrite": "/index.html"
+  "routes": [
+    {
+      "route": "/.auth/login/github",
+      "statusCode": 404
+    },
+    {
+      "route": "/.auth/login/twitter",
+      "statusCode": 404
+    },
+    {
+      "route": "/*",
+      "allowedRoles": ["authenticated"]
     }
+  ],
+  "responseOverrides": {
+    "401": {
+      "redirect": "/.auth/login/aad",
+      "statusCode": 302
+    }
+  },
+  "platform": {
+    "apiRuntime": "dotnet-isolated:7.0"
+  }
 }
+
