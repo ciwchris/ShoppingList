@@ -18,8 +18,8 @@ resource apimService 'Microsoft.ApiManagement/service@2021-08-01' = {
   location: location
   tags: union(tags, { 'azd-service-name': name })
   sku: {
-    name: 'Consumption'
-    capacity: 0
+    name: 'Developer'
+    capacity: 1
   }
   properties: {
     publisherEmail: publisherEmail

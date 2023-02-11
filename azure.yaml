@@ -4,9 +4,13 @@ name: shopping-list
 services:
   web:
     project: ./Client
-    dist: bin/Release/net7.0/publish/wwwroot
+    dist: bin/swa
     language: dotnet
     host: staticwebapp
+    hooks:
+      prepackage:
+        shell: sh
+        run: swa build
   api:
     project: ./Api
     language: dotnet
