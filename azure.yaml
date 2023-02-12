@@ -4,7 +4,7 @@ name: shopping-list
 services:
   web:
     project: ./Client
-    dist: bin/swa
+    dist: bin/swa/wwwroot
     language: dotnet
     host: staticwebapp
     hooks:

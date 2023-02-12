@@ -1,6 +1,7 @@
 param name string
 param location string = resourceGroup().location
 param tags object = {}
+param keyVaultUri string
 param apimName string
 
 param sku object = {
@@ -15,6 +16,18 @@ resource web 'Microsoft.Web/staticSites@2022-03-01' = {
   sku: sku
   properties: {
     provider: 'Custom'
+  }
+  identity: {
+    type: 'SystemAssigned'
+  }
+}
+
+resource appSettings 'Microsoft.Web/staticSites/config@2022-03-01' = {
+  parent: web
+  name: 'appsettings'
+  properties: {
+    AZURECLIENTID: '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/AZURECLIENTID/)'
+    AZURECLIENTSECRET: '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/AZURECLIENTSECRET/)'
   }
 }
 
@@ -32,6 +45,7 @@ resource apimService 'Microsoft.ApiManagement/service@2021-08-01' existing = {
   name: apimName
 }
 
+output SERVICE_WEB_IDENTITY_PRINCIPAL_ID string = web.identity.principalId
 output SERVICE_WEB_NAME string = web.name
 output SERVICE_WEB_URI string = 'https://${web.properties.defaultHostname}'
 output APIM_PRODUCT_NAME string = substring(web.properties.defaultHostname, 0, indexOf(web.properties.defaultHostname, '.'))

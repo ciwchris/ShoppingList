@@ -13,8 +13,10 @@ param applicationInsightsName string = ''
 param apiServiceName string = ''
 param resourceGroupName string = ''
 param storageAccountName string = ''
+param keyVaultName string = ''
 param webServiceName string = ''
 param apimProductApiName string = 'shopping-list-api'
+param principalId string = ''
 
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
@@ -36,6 +38,7 @@ module web './app/web.bicep' = {
     location: location
     tags: tags
     apimName: apim.outputs.apimServiceName
+    keyVaultUri: keyVault.outputs.endpoint
   }
 }
 
@@ -71,6 +74,28 @@ module storage './app/storage.bicep' = {
     name: !empty(storageAccountName) ? storageAccountName : '${abbrs.storageStorageAccounts}${resourceToken}'
     location: location
     tags: tags
+  }
+}
+
+// Store secrets in a keyvault
+module keyVault './app/keyvault.bicep' = {
+  name: 'keyvault'
+  scope: rg
+  params: {
+    name: !empty(keyVaultName) ? keyVaultName : '${abbrs.keyVaultVaults}${resourceToken}'
+    location: location
+    tags: tags
+    principalId: principalId
+  }
+}
+
+// Give the web app access to KeyVault
+module webKeyVaultAccess './app/keyvault-access.bicep' = {
+  name: 'api-keyvault-access'
+  scope: rg
+  params: {
+    keyVaultName: keyVault.outputs.name
+    principalId: web.outputs.SERVICE_WEB_IDENTITY_PRINCIPAL_ID
   }
 }
 
