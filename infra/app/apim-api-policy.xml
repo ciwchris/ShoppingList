@@ -1,6 +1,5 @@
 <!-- Policy configuration for the API. Explore other sample policies at https://learn.microsoft.com/en-us/azure/api-management/policies/ -->
 <policies>
-
     <inbound>
         <base />
         <!-- This policy is needed to handle preflight requests using the OPTIONS method. Learn more at https://learn.microsoft.com/en-us/azure/api-management/api-management-cross-domain-policies  -->

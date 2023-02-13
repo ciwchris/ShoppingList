@@ -13,13 +13,8 @@ param apiDisplayName string
 @minLength(1)
 param apiDescription string
 
-@description('Absolute URL of the web frontend')
-param webFrontendUrl string
-
 @description('Absolute URL of the backend service implementing this API.')
 param apiBackendUrl string
-
-var apiPolicyContent = replace(loadTextContent('./apim-api-policy.xml'), '{origin}', webFrontendUrl)
 
 resource restApi 'Microsoft.ApiManagement/service/apis@2021-12-01-preview' = {
   name: apiName
@@ -34,15 +29,6 @@ resource restApi 'Microsoft.ApiManagement/service/apis@2021-12-01-preview' = {
     format: 'openapi'
     serviceUrl: '${apiBackendUrl}/api'
     value: loadTextContent('../../Api/openapi.yaml')
-  }
-}
-
-resource apiPolicy 'Microsoft.ApiManagement/service/apis/policies@2021-12-01-preview' = {
-  name: 'policy'
-  parent: restApi
-  properties: {
-    format: 'rawxml'
-    value: apiPolicyContent
   }
 }
 
@@ -96,4 +82,5 @@ resource apimLogger 'Microsoft.ApiManagement/service/loggers@2021-12-01-preview'
   parent: apimService
 }
 
+output apimApiName string = restApi.name
 output SERVICE_API_URI string = apimService.properties.gatewayUrl

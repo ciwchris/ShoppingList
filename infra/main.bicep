@@ -9,6 +9,14 @@ param environmentName string
 @description('Primary location for all resources')
 param location string
 
+@secure()
+@description('The Azure AD app registartion Client ID')
+param azureClientId string
+
+@secure()
+@description('The Azure AD app registartion Secret')
+param azureClientSecret string
+
 param applicationInsightsName string = ''
 param apiServiceName string = ''
 param resourceGroupName string = ''
@@ -96,6 +104,8 @@ module webKeyVaultAccess './app/keyvault-access.bicep' = {
   params: {
     keyVaultName: keyVault.outputs.name
     principalId: web.outputs.SERVICE_WEB_IDENTITY_PRINCIPAL_ID
+    azureClientId: azureClientId
+    azureClientSecret: azureClientSecret
   }
 }
 
@@ -131,8 +141,18 @@ module apimApi './app/apim-api.bicep' = {
     apiName: apimProductApiName
     apiDisplayName: 'Shopping List API'
     apiDescription: 'This is a Shopping List API'
-    webFrontendUrl: web.outputs.SERVICE_WEB_URI
     apiBackendUrl: api.outputs.SERVICE_API_URI
+  }
+}
+
+// Add APIM policy (needs to be separate to add web to CORS origin)
+module apimApiPolicy './app/apim-api-policy.bicep' = {
+  name: 'apim-api-policy'
+  scope: rg
+  params: {
+    apimName: apim.outputs.apimServiceName
+    apimApiName: apimApi.outputs.apimApiName
+    webFrontendUrl: web.outputs.SERVICE_WEB_URI
   }
 }
 

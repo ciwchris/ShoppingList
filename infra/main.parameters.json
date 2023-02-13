@@ -7,6 +7,12 @@
     },
     "location": {
       "value": "${AZURE_LOCATION}"
+    },
+    "azureClientId": {
+      "value": "${AZURE_AD_CLIENT_ID}"
+    },
+    "azureClientSecret": {
+      "value": "${AZURE_AD_CLIENT_SECRET}"
     }
   }
 }
