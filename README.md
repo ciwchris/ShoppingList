@@ -1,5 +1,11 @@
 # Blazor Starter Application
 
+1. azurite --silent --location c:\azurite --debug c:\azurite\debug.log
+2. Run VS
+3. swa start
+4. http://localhost:4280
+
+
 Tailwind with Blazor
 
 - https://chrissainty.com/adding-tailwind-css-v3-to-a-blazor-app/ (used this one)
