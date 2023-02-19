@@ -9,8 +9,12 @@ services:
     host: staticwebapp
     hooks:
       prepackage:
-        shell: sh
-        run: swa build
+        posix:
+          shell: sh
+          run: swa build
+        windows:
+          shell: pwsh
+          run: swa build
   api:
     project: ./Api
     language: dotnet

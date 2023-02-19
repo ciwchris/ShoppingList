@@ -6,7 +6,7 @@
       "outputLocation": "bin/swa/wwwroot",
       "appBuildCommand": "dotnet publish -c Release -o bin/swa",
       "run": "dotnet watch run",
-      "appDevserverUrl": "http://localhost:8000"
+      "appDevserverUrl": "http://localhost:5000"
     }
   }
 }
