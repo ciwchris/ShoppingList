@@ -26,8 +26,8 @@ resource appSettings 'Microsoft.Web/staticSites/config@2022-03-01' = {
   parent: web
   name: 'appsettings'
   properties: {
-    AZURECLIENTID: '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/AZURECLIENTID/)'
-    AZURECLIENTSECRET: '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/AZURECLIENTSECRET/)'
+    AZURECLIENTID: '@Microsoft.KeyVault(SecretUri=${keyVaultUri}secrets/AZURECLIENTID/)'
+    AZURECLIENTSECRET: '@Microsoft.KeyVault(SecretUri=${keyVaultUri}secrets/AZURECLIENTSECRET/)'
   }
 }
 
