@@ -1,10 +1,12 @@
 # Blazor Starter Application
 
+0. VPN disrupts reading the SWA route config file
 1. azurite --silent --location c:\azurite --debug c:\azurite\debug.log
 2. Run VS
 3. swa start
 4. http://localhost:4280
 
+- Windows build blazor apps which fail sha256. Need to target "blazor-wasm"
 
 Tailwind with Blazor
 
